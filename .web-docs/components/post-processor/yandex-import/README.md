@@ -106,6 +106,8 @@ file.
 
 - `skip_create_image` (bool) - Skip creating the image. Useful for setting to `true` during a build test stage. Defaults to `false`.
 
+- `image_pci_topology` (string) - PCI Topology version which will be used by the image
+
 <!-- End of code generated from the comments of the ImageConfig struct in builder/yandex/common_config.go; -->
 
 

@@ -7,8 +7,8 @@ To install this plugin add this code into your Packer configuration and run [pac
 packer {
   required_plugins {
     yandex = {
-      version = "~> 1"
-      source  = "github.com/hashicorp/yandex"
+      version = "~> 2"
+      source  = "github.com/itlabsio/yandex"
     }
   }
 }
@@ -17,7 +17,7 @@ packer {
 Alternatively, you can use `packer plugins install` to manage installation of this plugin.
 
 ```sh
-packer plugins install github.com/hashicorp/yandex
+packer plugins install github.com/itlabsio/yandex
 ```
 
 ### Components

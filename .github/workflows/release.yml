@@ -1,16 +1,19 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-# This GitHub action can publish assets for release when a tag is created.
-# Currently its setup to run on any tag that matches the pattern "v*" (ie. v0.1.0).
+# This GitHub action publishes release assets (binaries + SHA256SUMS) when a
+# tag matching "v*" (ie. v1.2.0) is pushed. The published GitHub Release
+# follows Packer's plugin naming convention, so it can be installed directly
+# from this repo without going through the HashiCorp plugin registry, e.g.:
 #
-# This uses an action (hashicorp/ghaction-import-gpg) that assumes you set your
-# private key in the `GPG_PRIVATE_KEY` secret and passphrase in the `GPG_PASSPHRASE`
-# secret. If you would rather own your own GPG handling, please fork this action
-# or use an alternative one for key handling.
-#
-# You will need to pass the `--batch` flag to `gpg` in your signing step
-# in `goreleaser` to indicate this is being used in a non-interactive mode.
+#   packer {
+#     required_plugins {
+#       yandex = {
+#         version = ">= 1.2.0"
+#         source  = "github.com/itlabsio/yandex"
+#       }
+#     }
+#   }
 #
 name: release
 on:
@@ -48,8 +51,6 @@ jobs:
       - name: Describe plugin
         id: plugin_describe
         run: echo "api_version=$(go run . describe | jq -r '.api_version')" >> "$GITHUB_OUTPUT"
-      - name: Install signore
-        uses: hashicorp/setup-signore-package@v1
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8 # v5.0.0
         with:
@@ -58,6 +59,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           API_VERSION: ${{ steps.plugin_describe.outputs.api_version }}
-          SIGNORE_CLIENT_ID: ${{ secrets.SIGNORE_CLIENT_ID }}
-          SIGNORE_CLIENT_SECRET: ${{ secrets.SIGNORE_CLIENT_SECRET }}
-          SIGNORE_SIGNER: ${{ secrets.SIGNORE_SIGNER }}

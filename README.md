@@ -19,17 +19,21 @@ Then, run [`packer init`](https://www.packer.io/docs/commands/init).
 packer {
   required_plugins {
     yandex = {
-      version = ">= 1.1.3"
-      source  = "github.com/hashicorp/yandex"
+      version = ">= 2.0.0"
+      source  = "github.com/itlabsio/yandex"
     }
   }
 }
 ```
 
+This installs the plugin directly from this fork's GitHub releases (no
+HashiCorp registry involved) &mdash; `packer init` resolves `github.com/<namespace>/<name>`
+source addresses straight to `https://github.com/<namespace>/packer-plugin-<name>/releases`.
+
 
 #### Manual installation
 
-You can find pre-built binary releases of the plugin [here](https://github.com/hashicorp/packer-plugin-yandex/releases).
+You can find pre-built binary releases of the plugin [here](https://github.com/itlabsio/packer-plugin-yandex/releases).
 Once you have downloaded the latest archive corresponding to your target OS,
 uncompress it to retrieve the plugin binary file corresponding to your platform.
 To install the plugin, please follow the Packer documentation on
