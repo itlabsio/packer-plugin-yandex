@@ -19,6 +19,20 @@
 
 - `skip_create_image` (bool) - Skip creating the image. Useful for setting to `true` during a build test stage. Defaults to `false`.
 
-- `image_pci_topology` (string) - PCI Topology version which will be used by the image
+- `image_pci_topology` (string) - PCI Topology version which will be used by the image. One of `PCI_TOPOLOGY_V1`
+  or `PCI_TOPOLOGY_V2`. Only applies to the `legacy` hardware generation (the
+  default); it does not enable UEFI boot. To build a UEFI image, set
+  `image_hardware_generation` to `generation2` instead.
+
+- `image_hardware_generation` (string) - Hardware generation to use for the resulting image. One of `legacy` (default,
+  BIOS/MBR boot; `image_pci_topology` selects the PCI topology within it) or
+  `generation2` (UEFI boot, with PCI Topology V2).
+
+- `image_secure_boot_template_id` (string) - ID of the secure boot template containing the UEFI key databases used to
+  verify boot components. Only used when `image_hardware_generation` is
+  `generation2`. If empty, secure boot is disabled.
+
+- `image_vtpm_enabled` (bool) - Whether the virtual Trusted Platform Module (vTPM) is enabled for the
+  instance. Only used when `image_hardware_generation` is `generation2`.
 
 <!-- End of code generated from the comments of the ImageConfig struct in builder/yandex/common_config.go; -->

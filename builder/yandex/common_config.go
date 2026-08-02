@@ -156,8 +156,22 @@ type ImageConfig struct {
 	ImagePooled bool `mapstructure:"image_pooled" required:"false"`
 	// Skip creating the image. Useful for setting to `true` during a build test stage. Defaults to `false`.
 	SkipCreateImage bool `mapstructure:"skip_create_image" required:"false"`
-	// PCI Topology version which will be used by the image
+	// PCI Topology version which will be used by the image. One of `PCI_TOPOLOGY_V1`
+	// or `PCI_TOPOLOGY_V2`. Only applies to the `legacy` hardware generation (the
+	// default); it does not enable UEFI boot. To build a UEFI image, set
+	// `image_hardware_generation` to `generation2` instead.
 	ImagePCITopology string `mapstructure:"image_pci_topology" required:"false"`
+	// Hardware generation to use for the resulting image. One of `legacy` (default,
+	// BIOS/MBR boot; `image_pci_topology` selects the PCI topology within it) or
+	// `generation2` (UEFI boot, with PCI Topology V2).
+	ImageHardwareGeneration string `mapstructure:"image_hardware_generation" required:"false"`
+	// ID of the secure boot template containing the UEFI key databases used to
+	// verify boot components. Only used when `image_hardware_generation` is
+	// `generation2`. If empty, secure boot is disabled.
+	ImageSecureBootTemplateID string `mapstructure:"image_secure_boot_template_id" required:"false"`
+	// Whether the virtual Trusted Platform Module (vTPM) is enabled for the
+	// instance. Only used when `image_hardware_generation` is `generation2`.
+	ImageVtpmEnabled bool `mapstructure:"image_vtpm_enabled" required:"false"`
 }
 
 func (c *ImageConfig) Prepare(errs *packersdk.MultiError) *packersdk.MultiError {
@@ -188,6 +202,18 @@ func (c *ImageConfig) Prepare(errs *packersdk.MultiError) *packersdk.MultiError 
 		} else {
 			c.ImageName = img
 		}
+	}
+
+	switch c.ImageHardwareGeneration {
+	case "", "legacy", "generation2":
+	default:
+		errs = packersdk.MultiErrorAppend(errs,
+			fmt.Errorf("Invalid image_hardware_generation: %q, must be one of \"legacy\" or \"generation2\"", c.ImageHardwareGeneration))
+	}
+
+	if c.ImageHardwareGeneration == "generation2" && c.ImagePCITopology != "" {
+		errs = packersdk.MultiErrorAppend(errs,
+			errors.New("image_pci_topology cannot be used together with image_hardware_generation = \"generation2\"; generation2 always uses PCI_TOPOLOGY_V2"))
 	}
 
 	return errs

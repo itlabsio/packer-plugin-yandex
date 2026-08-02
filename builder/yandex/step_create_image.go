@@ -38,12 +38,24 @@ func (s *stepCreateImage) Run(ctx context.Context, state multistep.StateBag) mul
 	defer cancel()
 
 	var hardwareGeneration *compute.HardwareGeneration
-	if c.ImagePCITopology != "" {
-		if pciTopologyValue, ok := compute.PCITopology_value[c.ImagePCITopology]; ok {
-			hardwareGeneration = &compute.HardwareGeneration{
-				Features: &compute.HardwareGeneration_LegacyFeatures{
-					LegacyFeatures: &compute.LegacyHardwareFeatures{PciTopology: compute.PCITopology(pciTopologyValue)},
+	switch c.ImageHardwareGeneration {
+	case "generation2":
+		hardwareGeneration = &compute.HardwareGeneration{
+			Features: &compute.HardwareGeneration_Generation2Features{
+				Generation2Features: &compute.Generation2HardwareFeatures{
+					SecureBootTemplateId: c.ImageSecureBootTemplateID,
+					VtpmEnabled:          c.ImageVtpmEnabled,
 				},
+			},
+		}
+	default:
+		if c.ImagePCITopology != "" {
+			if pciTopologyValue, ok := compute.PCITopology_value[c.ImagePCITopology]; ok {
+				hardwareGeneration = &compute.HardwareGeneration{
+					Features: &compute.HardwareGeneration_LegacyFeatures{
+						LegacyFeatures: &compute.LegacyHardwareFeatures{PciTopology: compute.PCITopology(pciTopologyValue)},
+					},
+				}
 			}
 		}
 	}
