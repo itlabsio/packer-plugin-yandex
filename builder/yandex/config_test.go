@@ -22,8 +22,8 @@ func TestConfigPrepare(t *testing.T) {
 
 	var TestServiceAccountKeyFileContent = string(bytes)
 
-	defer os.Remove(tf.Name())
-	tf.Close()
+	defer func() { _ = os.Remove(tf.Name()) }()
+	_ = tf.Close()
 
 	cases := []struct {
 		Key   string

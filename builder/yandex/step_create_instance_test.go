@@ -5,7 +5,6 @@ package yandex
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -19,9 +18,9 @@ import (
 const testMetadataFileContent = `meta data value`
 
 func testMetadataFile(t *testing.T) string {
-	tf, err := ioutil.TempFile("", "packer")
+	tf, err := os.CreateTemp("", "packer")
 	require.NoErrorf(t, err, "create temporary file failed")
-	defer tf.Close()
+	defer func() { _ = tf.Close() }()
 
 	_, err = tf.Write([]byte(testMetadataFileContent))
 	require.NoErrorf(t, err, "write to file failed")
@@ -60,7 +59,7 @@ func TestCreateInstanceMetadata_noPublicKey(t *testing.T) {
 func TestCreateInstanceMetadata_fromFile(t *testing.T) {
 	state := testState(t)
 	metadataFile := testMetadataFile(t)
-	defer os.Remove(metadataFile)
+	defer func() { _ = os.Remove(metadataFile) }()
 
 	state.Put("config", testConfigStruct(t))
 	c := state.Get("config").(*Config)
@@ -79,7 +78,7 @@ func TestCreateInstanceMetadata_fromFile(t *testing.T) {
 func TestCreateInstanceMetadata_fromFileAndTemplate(t *testing.T) {
 	state := testState(t)
 	metadataFile := testMetadataFile(t)
-	defer os.Remove(metadataFile)
+	defer func() { _ = os.Remove(metadataFile) }()
 
 	state.Put("config", testConfigStruct(t))
 	c := state.Get("config").(*Config)

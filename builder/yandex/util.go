@@ -6,7 +6,7 @@ package yandex
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/c2h5oh/datasize"
 	"github.com/hashicorp/packer-plugin-sdk/multistep"
@@ -46,7 +46,7 @@ func writeSerialLogFile(ctx context.Context, state multistep.StateBag, serialLog
 	if err != nil {
 		return fmt.Errorf("Failed to get serial port output for instance (id: %s): %s", instanceID, err)
 	}
-	if err := ioutil.WriteFile(serialLogFile, []byte(serialOutput.Contents), 0600); err != nil {
+	if err := os.WriteFile(serialLogFile, []byte(serialOutput.Contents), 0600); err != nil {
 		return fmt.Errorf("Failed to write serial port output to file: %s", err)
 	}
 	ui.Message("Serial port output has been successfully written")

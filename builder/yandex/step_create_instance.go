@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/c2h5oh/datasize"
 	"github.com/hashicorp/packer-plugin-sdk/multistep"
@@ -411,7 +411,7 @@ func (c *Config) createInstanceMetadata(sshPublicKey string) (map[string]string,
 
 	// Copy metadata from config.
 	for k, file := range c.MetadataFromFile {
-		contents, err := ioutil.ReadFile(file)
+		contents, err := os.ReadFile(file)
 		if err != nil {
 			return nil, fmt.Errorf("error while read file '%s' with content for value of metadata key '%s': %s", file, k, err)
 		}

@@ -9,9 +9,9 @@ package yandexexport
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/c2h5oh/datasize"
@@ -202,7 +202,7 @@ func (p *PostProcessor) PostProcess(ctx context.Context, ui packersdk.Ui, artifa
 	// case file.BuilderId:
 	case "packer.file":
 		fileName := artifact.Files()[0]
-		if content, err := ioutil.ReadFile(fileName); err == nil {
+		if content, err := os.ReadFile(fileName); err == nil {
 			imageID = strings.TrimSpace(string(content))
 		} else {
 			return nil, false, false, err
